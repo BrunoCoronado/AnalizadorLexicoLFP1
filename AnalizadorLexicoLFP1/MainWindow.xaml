@@ -5,8 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:AnalizadorLexicoLFP1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="MainWindow" Height="500" Width="500" ResizeMode="NoResize">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Archivo">
+                <MenuItem Header="Abrir"/>
+                <MenuItem Header="Guardar"/>
+                <MenuItem Header="Guardar Como"/>
+                <Separator/>
+                <MenuItem Header="Salir"/>
+            </MenuItem>
+            <MenuItem Header="Analizar">
+                <MenuItem Header="Analizador Lexico" Click="analizar"/>
+            </MenuItem>
+            <MenuItem Header="Reportes">
+                <MenuItem Header="Generar Reporte"/>
+                <MenuItem Header="Generar Diagrama"/>
+            </MenuItem>
+        </Menu>
+        <TextBox
+            Name="txtContenido"
+            AcceptsTab="True"
+            TextWrapping="Wrap"
+            AcceptsReturn="True"
+            VerticalScrollBarVisibility="Visible"
+            Height="Auto"
+            Width="Auto"
+        />
+    </DockPanel>
 </Window>
