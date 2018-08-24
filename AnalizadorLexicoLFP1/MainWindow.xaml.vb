@@ -21,7 +21,7 @@
         For i As Integer = 0 To (noLineas - 1)
             lineasContenido.Add(txtContenido.GetLineText(i))
         Next
-        'Dim ManejoDeDatos As New ManejoDeDatos(lineasContenido)
+        Dim ManejoDeDatos As New ManejoDeDatos(lineasContenido)
     End Sub
 
 End Class
