@@ -1,19 +1,5 @@
 ﻿Class MainWindow
 
-    'StringCollection GetLinesCollectionFromTextBox(TextBox textBox)
-
-    'StringCollection lines = New StringCollection();
-
-    '// lineCount may be -1 if TextBox layout info Is Not up-to-date.
-    'int lineCount = TextBox.LineCount;
-
-    'For (int line = 0; line < lineCount; line++)
-    '    // GetLineText takes a zero-based line index.
-    '    lines.Add(textBox.GetLineText(line));
-
-    'Return lines;
-    '}
-
     Private Sub analizar(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim noLineas = txtContenido.LineCount
         Dim lineasContenido As New ArrayList
