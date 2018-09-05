@@ -3,6 +3,7 @@
 Public Class ManejoDeDatos
     Private tokens As New ArrayList
     Private errores As New ArrayList
+    Private listaDeClases As New ArrayList
 
     Public Sub New(textoAnalizar As ArrayList)
         analizarDatos(textoAnalizar)
@@ -19,6 +20,7 @@ Public Class ManejoDeDatos
         Else
             'antes de mostrar la tabla de tokens hay que analizar si se cumple la "sintaxis"
             verTablaTokens()
+            verificarSintaxis()
         End If
     End Sub
 
@@ -43,11 +45,11 @@ Public Class ManejoDeDatos
                 Case vbCr
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
                 Case vbTab
-                    validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
+                    'validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
                 Case vbLf
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
                 Case " "
-                    validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
+                    'validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
                 Case "["
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
                     agregarTokenATabla(caracter, "Delimitador", indiceCadena, noLinea)
@@ -71,13 +73,13 @@ Public Class ManejoDeDatos
                     agregarTokenATabla(caracter, "Delimitador", indiceCadena, noLinea)
                 Case "+"
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
-                    agregarTokenATabla(caracter, "Palabra Reservada", indiceCadena, noLinea)
+                    agregarTokenATabla(caracter, "Palabra Reservada Visibilidad", indiceCadena, noLinea)
                 Case "-"
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
-                    agregarTokenATabla(caracter, "Palabra Reservada", indiceCadena, noLinea)
+                    agregarTokenATabla(caracter, "Palabra Reservada Visibilidad", indiceCadena, noLinea)
                 Case "#"
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
-                    agregarTokenATabla(caracter, "Palabra Reservada", indiceCadena, noLinea)
+                    agregarTokenATabla(caracter, "Palabra Reservada Visibilidad", indiceCadena, noLinea)
                 Case ":"
                     validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
                     agregarTokenATabla(caracter, "Delimitador", indiceCadena, noLinea)
@@ -150,6 +152,8 @@ Public Class ManejoDeDatos
         Select Case palabra
             Case "clase"
                 tipo = "Palabra Reservada"
+                'guardar indice donde se encuentra en listado aparte
+                listaDeClases.Add(tokens.Count)
             Case "nombre"
                 tipo = "Palabra Reservada"
             Case "atributos"
@@ -171,5 +175,127 @@ Public Class ManejoDeDatos
         End Select
         agregarTokenATabla(palabra, tipo, columna, fila)
     End Sub
+
+    Private Sub verificarSintaxis()
+        For i As Integer = 0 To (listaDeClases.Count - 1)
+            Dim indiceClase As Integer = listaDeClases(i)
+            If CType(tokens(indiceClase - 1), Token).lexema.Equals("[") Then
+                If CType(tokens(indiceClase), Token).lexema.Equals("clase") Then
+                    If CType(tokens(indiceClase + 1), Token).lexema.Equals("]") Then
+                        If CType(tokens(indiceClase + 2), Token).lexema.Equals("{") Then
+                            leerContenidoClase(indiceClase + 3)
+                        End If
+                    End If
+                End If
+            End If
+        Next
+        'If CType(tokens(0), Token).lexema.Equals("[") Then
+        '    If CType(tokens(1), Token).lexema.Equals("clase") Then
+        '        If CType(tokens(2), Token).lexema.Equals("]") Then
+        '            If CType(tokens(3), Token).lexema.Equals("{") Then
+        '                leerContenidoClase()
+        '            End If
+        '        End If
+        '    End If
+        'End If
+    End Sub
+
+    Private Sub leerContenidoClase(ByRef inicio As Integer)
+        For i As Integer = inicio To tokens.Count
+            Select Case CType(tokens(i), Token).lexema
+                Case "["
+                    Select Case CType(tokens(i + 1), Token).lexema
+                        Case "nombre"
+                            'leer nombre
+                            If CType(tokens(i + 2), Token).lexema.Equals("]") Then
+                                i = i + leerNombreClase(i + 3)
+                            End If
+                        Case "atributos"
+                            'leer atributos
+                            If CType(tokens(i + 2), Token).lexema.Equals("]") Then
+                                i = i + leerAtributosOMetodos(i + 3)
+                            End If
+                        Case "metodos"
+                            'leer metodos
+                            If CType(tokens(i + 2), Token).lexema.Equals("]") Then
+                                i = i + leerAtributosOMetodos(i + 3)
+                            End If
+                    End Select
+                Case "}"
+                    'final de la clase
+                    Console.WriteLine("Clase Correcta")
+                    Exit For
+            End Select
+        Next
+    End Sub
+
+    Private Function leerAtributosOMetodos(ByRef inicio As Integer) As Integer
+        Dim contadorTokens As Integer = 2
+        If CType(tokens(inicio), Token).lexema.Equals("{") Then
+            contadorTokens += 1
+            'leer cada atributo existente
+            For i As Integer = inicio + 1 To tokens.Count
+                Select Case CType(tokens(i), Token).lexema
+                    Case "("
+                        contadorTokens += 1
+                        'leer atributo
+                        Dim tokensContados As Integer = leerAtributoOMetodo(i + 1)
+                        i = i + tokensContados
+                        contadorTokens = contadorTokens + tokensContados
+                    Case "}"
+                        contadorTokens += 1
+                        Exit For
+                        'terminan los atributos
+                End Select
+            Next
+        End If
+        Return contadorTokens
+    End Function
+
+    Private Function leerAtributoOMetodo(ByRef inicio As Integer) As Integer
+        Dim contadorTokens As Integer = 0
+        If CType(tokens(inicio), Token).tipo.Equals("Palabra Reservada Visibilidad") Then
+            contadorTokens += 1
+            If CType(tokens(inicio + 1), Token).lexema.Equals(")") Then
+                contadorTokens += 1
+                If CType(tokens(inicio + 2), Token).tipo.Equals("Identificador") Then
+                    contadorTokens += 1
+                    Select Case CType(tokens(inicio + 3), Token).lexema
+                        Case ":"
+                            contadorTokens += 1
+                            If CType(tokens(inicio + 4), Token).tipo.Equals("Identificador") Then
+                                contadorTokens += 1
+                                If CType(tokens(inicio + 5), Token).lexema.Equals(";") Then
+                                    'fin
+                                    contadorTokens += 1
+                                    Return contadorTokens
+                                End If
+                            End If
+                        Case ";"
+                            'fin
+                            contadorTokens += 1
+                            Return contadorTokens
+                    End Select
+                End If
+            End If
+        End If
+        Return contadorTokens
+    End Function
+
+    Private Function leerNombreClase(ByRef inicio As Integer) As Integer
+        Dim contadorTokens As Integer = 2
+        If CType(tokens(inicio), Token).lexema.Equals("=") Then
+            contadorTokens += 1
+            If CType(tokens(inicio + 1), Token).tipo.Equals("Identificador") Then
+                contadorTokens += 1
+                If CType(tokens(inicio + 2), Token).lexema.Equals(";") Then
+                    'lectura de nombre de clase finalizada  
+                    contadorTokens += 1
+                    Return contadorTokens
+                End If
+            End If
+        End If
+        Return contadorTokens
+    End Function
 
 End Class
