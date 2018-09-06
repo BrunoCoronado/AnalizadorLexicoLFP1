@@ -7,12 +7,14 @@ Public Class ManejoDeDatos
     Private clases As New ArrayList
     Private clase As Clase
     Private esAtributo As Boolean
+    Private asociaciones As New ArrayList
+    Private indicesDeAsociaciones As New ArrayList
 
     Public Sub New(textoAnalizar As ArrayList)
         analizarDatos(textoAnalizar)
     End Sub
 
-    Private Sub analizarDatos(ByRef textoAnalizar As ArrayList)
+    Private Sub analizarDatos(ByVal textoAnalizar As ArrayList)
         Dim noFila As Integer = 0
         For Each cadena As String In textoAnalizar
             analizarLinea(cadena, noFila)
@@ -25,7 +27,7 @@ Public Class ManejoDeDatos
             verTablaTokens()
             verificarSintaxis()
             Dim graficador As New Graficador
-            graficador.dibujarDiagrama(clases)
+            graficador.dibujarDiagrama(clases, asociaciones)
         End If
     End Sub
 
@@ -36,7 +38,7 @@ Public Class ManejoDeDatos
     'bandera para ver si existe errores
     Dim errorEncontrado As Boolean
 
-    Private Sub analizarLinea(ByRef lineaALeer As String, ByRef noLinea As Integer)
+    Private Sub analizarLinea(ByVal lineaALeer As String, ByVal noLinea As Integer)
         Dim indiceCadena As Integer
         'recorremos cada indice de la cadena
         For indiceCadena = 0 To (lineaALeer.Length - 1)
@@ -119,16 +121,16 @@ Public Class ManejoDeDatos
         validarEstadoPalabra(esIdentificador, (indiceCadena - palabra.Length), noLinea)
     End Sub
 
-    Private Sub agregarTokenATabla(ByRef lexema As String, ByRef tipo As String, ByRef columna As Integer, ByRef fila As Integer)
+    Private Sub agregarTokenATabla(ByVal lexema As String, ByVal tipo As String, ByVal columna As Integer, ByVal fila As Integer)
         tokens.Add(New Token(lexema, tipo, columna, fila))
     End Sub
 
-    Private Sub agregarErrorATabla(ByRef lexema As String, ByRef tipo As String, ByRef columna As Integer, ByRef fila As Integer)
+    Private Sub agregarErrorATabla(ByVal lexema As String, ByVal tipo As String, ByVal columna As Integer, ByVal fila As Integer)
         errores.Add(New Token(lexema, tipo, columna, fila))
         errorEncontrado = True
     End Sub
 
-    Private Sub validarEstadoPalabra(ByRef estado As Boolean, ByRef columna As Integer, ByRef fila As Integer)
+    Private Sub validarEstadoPalabra(ByVal estado As Boolean, ByVal columna As Integer, ByVal fila As Integer)
         If estado Then
             validarPalabraReservada(palabra, columna, fila)
             palabra = ""
@@ -152,7 +154,7 @@ Public Class ManejoDeDatos
         Next
     End Sub
 
-    Private Sub validarPalabraReservada(ByRef palabra As String, ByRef columna As Integer, ByRef fila As Integer)
+    Private Sub validarPalabraReservada(ByVal palabra As String, ByVal columna As Integer, ByVal fila As Integer)
         Dim tipo As String
         Select Case palabra
             Case "clase"
@@ -167,14 +169,16 @@ Public Class ManejoDeDatos
                 tipo = "Palabra Reservada"
             Case "asociacion"
                 tipo = "Palabra Reservada"
+                'guardar indice donde se encuentra la asociacion
+                indicesDeAsociaciones.Add(tokens.Count)
             Case "agregacion"
-                tipo = "Palabra Reservada"
+                tipo = "Palabra Reservada Asociacion"
             Case "composicion"
-                tipo = "Palabra Reservada"
+                tipo = "Palabra Reservada Asociacion"
             Case "asociacionsimple"
-                tipo = "Palabra Reservada"
+                tipo = "Palabra Reservada Asociacion"
             Case "herencia"
-                tipo = "Palabra Reservada"
+                tipo = "Palabra Reservada Asociacion"
             Case Else
                 tipo = "Identificador"
         End Select
@@ -182,15 +186,31 @@ Public Class ManejoDeDatos
     End Sub
 
     Private Sub verificarSintaxis()
+        Dim indice As Integer
+        'analizamos los bloques clase
         For i As Integer = 0 To (indicesDeClases.Count - 1)
-            Dim indiceClase As Integer = indicesDeClases(i)
-            If CType(tokens(indiceClase - 1), Token).lexema.Equals("[") Then
-                If CType(tokens(indiceClase), Token).lexema.Equals("clase") Then
-                    If CType(tokens(indiceClase + 1), Token).lexema.Equals("]") Then
-                        If CType(tokens(indiceClase + 2), Token).lexema.Equals("{") Then
+            indice = indicesDeClases(i)
+            If CType(tokens(indice - 1), Token).lexema.Equals("[") Then
+                If CType(tokens(indice), Token).lexema.Equals("clase") Then
+                    If CType(tokens(indice + 1), Token).lexema.Equals("]") Then
+                        If CType(tokens(indice + 2), Token).lexema.Equals("{") Then
                             clase = New Clase
-                            leerContenidoClase(indiceClase + 3)
+                            leerContenidoClase(indice + 3)
                             clases.Add(clase)
+                        End If
+                    End If
+                End If
+            End If
+        Next
+
+        'analizamos los bloques asociacion
+        For i As Integer = 0 To (indicesDeAsociaciones.Count - 1)
+            indice = indicesDeAsociaciones(i)
+            If CType(tokens(indice - 1), Token).lexema.Equals("[") Then
+                If CType(tokens(indice), Token).lexema.Equals("asociacion") Then
+                    If CType(tokens(indice + 1), Token).lexema.Equals("]") Then
+                        If CType(tokens(indice + 2), Token).lexema.Equals("{") Then
+                            leerContenidoAsociacion(indice + 3)
                         End If
                     End If
                 End If
@@ -198,7 +218,31 @@ Public Class ManejoDeDatos
         Next
     End Sub
 
-    Private Sub leerContenidoClase(ByRef inicio As Integer)
+    Private Sub leerContenidoAsociacion(ByVal inicio As Integer)
+        Dim asociacion As New Asociacion
+        If CType(tokens(inicio), Token).tipo.Equals("Identificador") Then
+            'reconocemos al padre de la asociacion
+            asociacion.padre = CType(tokens(inicio), Token).lexema
+            If CType(tokens(inicio + 1), Token).lexema.Equals(":") Then
+                If CType(tokens(inicio + 2), Token).tipo.Equals("Palabra Reservada Asociacion") Then
+                    'reconocemos la asociacion
+                    asociacion.asociacion = CType(tokens(inicio + 2), Token).lexema
+                    If CType(tokens(inicio + 3), Token).lexema.Equals(":") Then
+                        If CType(tokens(inicio + 4), Token).tipo.Equals("Identificador") Then
+                            'reconocemos al hijo de la asociacion
+                            asociacion.hijo = CType(tokens(inicio + 4), Token).lexema
+                            If CType(tokens(inicio + 5), Token).lexema.Equals(";") Then
+                                asociaciones.Add(asociacion)
+                                Console.WriteLine("asociacion correcta")
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Sub leerContenidoClase(ByVal inicio As Integer)
         For i As Integer = inicio To tokens.Count
             Select Case CType(tokens(i), Token).lexema
                 Case "["

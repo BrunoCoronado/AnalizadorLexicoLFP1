@@ -1,5 +1,5 @@
 ﻿Public Class Graficador
-    Public Sub dibujarDiagrama(ByVal clases As ArrayList)
+    Public Sub dibujarDiagrama(ByVal clases As ArrayList, ByVal asociaciones As ArrayList)
         Dim streamWriter As New System.IO.StreamWriter("diagrama.txt")
 
         streamWriter.WriteLine("digraph diagrama{")
@@ -7,25 +7,33 @@
         streamWriter.WriteLine("node[shape=record,style=filled,fillcolor=gray95]")
         streamWriter.WriteLine("edge[dir=back, arrowtail=empty]")
 
+        Dim textoNodo As String
+
         For i As Integer = 0 To (clases.Count - 1)
-            Dim nodoClase As String = "" + i.ToString
-            nodoClase = nodoClase & "[label = ""{" & CType(clases(i), Clase).nombre & "|"
+            textoNodo = "" & CType(clases(i), Clase).nombre
+            textoNodo = textoNodo & "[label = ""{" & CType(clases(i), Clase).nombre & "|"
 
             For Each atributo As Caracteristica In CType(clases(i), Clase).getAtributos
-                nodoClase = nodoClase & "" + atributo.visibilidad + " " + atributo.identificador + ":" + atributo.tipo + "\n"
+                textoNodo = textoNodo & "" + atributo.visibilidad + " " + atributo.identificador + ":" + atributo.tipo + "\n"
             Next
 
-            nodoClase = nodoClase & "|"
+            textoNodo = textoNodo & "|"
 
             For Each metodo As Caracteristica In CType(clases(i), Clase).getMetodos
-                nodoClase = nodoClase & "" + metodo.visibilidad + " " + metodo.identificador + "() :" + metodo.tipo + "\l"
+                textoNodo = textoNodo & "" + metodo.visibilidad + " " + metodo.identificador + "() :" + metodo.tipo + "\l"
             Next
 
-            nodoClase = nodoClase & "}""]"
-            streamWriter.WriteLine(nodoClase)
+            textoNodo = textoNodo & "}""]"
+            streamWriter.WriteLine(textoNodo)
+        Next
+
+        For Each asociacion As Asociacion In asociaciones
+            textoNodo = """" & asociacion.padre & """ -> """ & asociacion.hijo & """ [arrowhead=""" & asociacion.asociacion & """]"
+            streamWriter.WriteLine(textoNodo)
         Next
 
         streamWriter.WriteLine("}")
+
         streamWriter.Close()
         Console.WriteLine("archivo creado")
 

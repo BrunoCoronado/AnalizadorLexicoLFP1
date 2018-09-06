@@ -76,6 +76,7 @@
       <DependentUpon>Application.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bean\Asociacion.vb" />
     <Compile Include="Bean\Caracteristica.vb" />
     <Compile Include="Bean\Clase.vb" />
     <Compile Include="Bean\Token.vb" />
