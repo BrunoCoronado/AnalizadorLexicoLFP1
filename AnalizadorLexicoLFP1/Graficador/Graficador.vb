@@ -38,6 +38,7 @@
         Console.WriteLine("archivo creado")
 
         Dim prog As VariantType
-        prog = Interaction.Shell("C:\Program Files (x86)\Graphviz 2.28\bin\dot.exe -Tjpg diagrama.txt -o diagrama.jpg", 1)
+        prog = Interaction.Shell("C:\Program Files (x86)\Graphviz 2.28\bin\dot.exe -Tsvg diagrama.txt -o diagrama.svg\n diagrama.svg", 0)
+        Process.Start("diagrama.svg")
     End Sub
 End Class
