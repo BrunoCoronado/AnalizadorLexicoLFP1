@@ -79,6 +79,7 @@
     <Compile Include="Bean\Caracteristica.vb" />
     <Compile Include="Bean\Clase.vb" />
     <Compile Include="Bean\Token.vb" />
+    <Compile Include="Graficador\Graficador.vb" />
     <Compile Include="MainWindow.xaml.vb">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

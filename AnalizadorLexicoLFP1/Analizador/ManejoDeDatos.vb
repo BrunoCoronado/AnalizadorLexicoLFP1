@@ -24,6 +24,8 @@ Public Class ManejoDeDatos
             'antes de mostrar la tabla de tokens hay que analizar si se cumple la "sintaxis"
             verTablaTokens()
             verificarSintaxis()
+            Dim graficador As New Graficador
+            graficador.dibujarDiagrama(clases)
         End If
     End Sub
 
@@ -283,6 +285,13 @@ Public Class ManejoDeDatos
                             End If
                         Case ";"
                             'fin
+
+                            If esAtributo Then
+                                clase.setAtributo(caracteristica)
+                            Else
+                                clase.setMetodo(caracteristica)
+                            End If
+
                             contadorTokens += 1
                             Return contadorTokens
                     End Select

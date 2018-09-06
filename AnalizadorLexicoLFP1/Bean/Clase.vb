@@ -1,7 +1,7 @@
 ﻿Public Class Clase
     Private _nombre As String
-    Private _atributos As ArrayList
-    Private _metodos As ArrayList
+    Private _atributos As New ArrayList
+    Private _metodos As New ArrayList
 
     Public Property nombre As String
         Get

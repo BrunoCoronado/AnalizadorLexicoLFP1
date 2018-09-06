@@ -6,17 +6,6 @@
     Public Sub New()
     End Sub
 
-    Public Sub New(visibilidad As Char, identificador As String, tipo As String)
-        _visibilidad = visibilidad
-        _identificador = identificador
-        _tipo = tipo
-    End Sub
-
-    Public Sub New(visibilidad As Char, identificador As String)
-        _visibilidad = visibilidad
-        _identificador = identificador
-    End Sub
-
     Public Property visibilidad As Char
         Get
             Return Me._visibilidad
@@ -40,7 +29,7 @@
             Return Me._tipo
         End Get
         Set(value As String)
-            Me._tipo = tipo
+            Me._tipo = value
         End Set
     End Property
 End Class
