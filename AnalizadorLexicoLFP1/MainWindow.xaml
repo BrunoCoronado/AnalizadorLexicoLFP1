@@ -19,8 +19,8 @@
                 <MenuItem Header="Analizador Lexico" Click="analizar"/>
             </MenuItem>
             <MenuItem Header="Reportes">
-                <MenuItem Header="Generar Reporte"/>
-                <MenuItem Header="Generar Diagrama"/>
+                <MenuItem Header="Generar Reporte" Click="generarReporteTokens"/>
+                <MenuItem Header="Generar Diagrama" Click="generarDiagrama"/>
             </MenuItem>
         </Menu>
         <TextBox

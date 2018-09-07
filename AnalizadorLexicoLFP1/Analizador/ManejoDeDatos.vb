@@ -10,8 +10,38 @@ Public Class ManejoDeDatos
     Private asociaciones As New ArrayList
     Private indicesDeAsociaciones As New ArrayList
 
-    Public Sub New(textoAnalizar As ArrayList)
+    Public Sub analizarLexico(textoAnalizar As ArrayList)
         analizarDatos(textoAnalizar)
+
+        If errorEncontrado Then
+            verTablaErroresEnConsola()
+        Else
+            verTablaTokensEnConsola() ' genera el reporte de tokens
+        End If
+    End Sub
+
+    Public Sub reporteDeTokens(textoAnalizar As ArrayList)
+        analizarDatos(textoAnalizar)
+
+        If errorEncontrado Then
+            verTablaErroresEnConsola()
+        Else
+            verTablaTokensEnConsola() ' genera el reporte de tokens
+            Dim graficador As New Graficador
+            graficador.dibujarReporteTokens(tokens)
+        End If
+    End Sub
+
+    Public Sub diagramarCodigo(textoAnalizar As ArrayList)
+        analizarDatos(textoAnalizar)
+
+        If errorEncontrado Then
+            verTablaErroresEnConsola()
+        Else
+            verificarSintaxis() ' inicia el proces de diagramar con las funciones de abajo
+            Dim graficador As New Graficador
+            graficador.dibujarDiagrama(clases, asociaciones)
+        End If
     End Sub
 
     Private Sub analizarDatos(ByVal textoAnalizar As ArrayList)
@@ -20,15 +50,6 @@ Public Class ManejoDeDatos
             analizarLinea(cadena, noFila)
             noFila = noFila + 1
         Next
-        If errorEncontrado Then
-            verTablaErrores()
-        Else
-            'antes de mostrar la tabla de tokens hay que analizar si se cumple la "sintaxis"
-            verTablaTokens()
-            verificarSintaxis()
-            Dim graficador As New Graficador
-            graficador.dibujarDiagrama(clases, asociaciones)
-        End If
     End Sub
 
     'en palabra vamos a concatenar los caracteres que sean validos en el lenguaje y no sean delimitadores
@@ -138,7 +159,7 @@ Public Class ManejoDeDatos
         End If
     End Sub
 
-    Private Sub verTablaTokens()
+    Private Sub verTablaTokensEnConsola()
         Dim i As Integer = 0
         For Each token As Token In tokens
             Console.WriteLine(i & " Lexema: " & token.lexema.ToString & " Tipo: " & token.tipo & " Fila: " & token.fila.ToString & " Columna: " & token.columna.ToString)
@@ -146,7 +167,7 @@ Public Class ManejoDeDatos
         Next
     End Sub
 
-    Private Sub verTablaErrores()
+    Private Sub verTablaErroresEnConsola()
         Dim i As Integer = 1
         For Each e As Token In errores
             Console.WriteLine(i & " error: " & e.lexema.ToString & " Fila: " & e.fila.ToString & " Columna: " & e.columna.ToString)
