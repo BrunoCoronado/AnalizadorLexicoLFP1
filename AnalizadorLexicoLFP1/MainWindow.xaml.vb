@@ -1,4 +1,5 @@
 ﻿Class MainWindow
+    Public Shared ruta As String = ""
 
     Private Sub analizar(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
@@ -6,14 +7,33 @@
     End Sub
 
 
-    Private Sub generarDiagrama(ByVal sender As System.Object, ByVal w As System.EventArgs)
+    Private Sub generarDiagrama(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
         manejoDeDatos.diagramarCodigo(obtenerCodigo())
     End Sub
 
-    Private Sub generarReporteTokens(ByVal sender As System.Object, ByVal w As System.EventArgs)
+    Private Sub generarReporteTokens(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
         manejoDeDatos.reporteDeTokens(obtenerCodigo())
+    End Sub
+
+    Private Sub abrirArchivo(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim abrirArchivo As New AbrirArchivo()
+        txtContenido.Text = abrirArchivo.abrirArchivo()
+    End Sub
+
+    Private Sub guardarArchivo(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim guardarCodigo As New GuardarCodigo
+        guardarCodigo.guardar(obtenerCodigo(), ruta)
+    End Sub
+
+    Private Sub guardarArchivoComo(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim guardarCodigo As New GuardarCodigo
+        guardarCodigo.guardarComo(obtenerCodigo())
+    End Sub
+
+    Private Sub salirDelPrograma(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        System.Environment.Exit(0)
     End Sub
 
     Private Function obtenerCodigo() As ArrayList
@@ -29,8 +49,4 @@
 
         Return lineasContenido
     End Function
-
-    Private Sub MenuItem_Click(sender As Object, e As RoutedEventArgs)
-
-    End Sub
 End Class

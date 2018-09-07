@@ -9,11 +9,11 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="Archivo">
-                <MenuItem Header="Abrir"/>
-                <MenuItem Header="Guardar"/>
-                <MenuItem Header="Guardar Como"/>
+                <MenuItem Header="Abrir" Click="abrirArchivo"/>
+                <MenuItem Header="Guardar" Click="guardarArchivo"/>
+                <MenuItem Header="Guardar Como" Click="guardarArchivoComo"/>
                 <Separator/>
-                <MenuItem Header="Salir"/>
+                <MenuItem Header="Salir" Click="salirDelPrograma"/>
             </MenuItem>
             <MenuItem Header="Analizar">
                 <MenuItem Header="Analizador Lexico" Click="analizar"/>
