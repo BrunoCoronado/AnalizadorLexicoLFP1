@@ -10,6 +10,16 @@ Public Class ManejoDeDatos
     Private asociaciones As New ArrayList
     Private indicesDeAsociaciones As New ArrayList
 
+    'en palabra vamos a concatenar los caracteres que sean validos en el lenguaje y no sean delimitadores
+    Dim palabra As String = ""
+    'bandera para validar si estamos leyendo un identificador
+    Dim esIdentificador As Boolean
+    'bandera para ver si existe errores
+    Dim errorEncontrado As Boolean
+    'banderas para validar el contenido de la clase
+    Dim contieneNombre As Boolean
+    Dim contieneMetodos As Boolean
+
     Public Sub analizarLexico(textoAnalizar As ArrayList)
         analizarDatos(textoAnalizar)
 
@@ -56,13 +66,6 @@ Public Class ManejoDeDatos
             noFila = noFila + 1
         Next
     End Sub
-
-    'en palabra vamos a concatenar los caracteres que sean validos en el lenguaje y no sean delimitadores
-    Dim palabra As String = ""
-    'bandera para validar si estamos leyendo un identificador
-    Dim esIdentificador As Boolean
-    'bandera para ver si existe errores
-    Dim errorEncontrado As Boolean
 
     Private Sub analizarLinea(ByVal lineaALeer As String, ByVal noLinea As Integer)
         Dim indiceCadena As Integer
@@ -222,7 +225,14 @@ Public Class ManejoDeDatos
                         If CType(tokens(indice + 2), Token).lexema.Equals("{") Then
                             clase = New Clase
                             leerContenidoClase(indice + 3)
-                            clases.Add(clase)
+                            If contieneNombre = True And contieneMetodos = True Then
+                                contieneMetodos = False
+                                contieneNombre = False
+                                clases.Add(clase)
+                                Console.WriteLine("clase agregada")
+                            Else
+                                Console.WriteLine("clase no agragada-falta bloque obligatorio")
+                            End If
                         End If
                     End If
                 End If
@@ -286,6 +296,7 @@ Public Class ManejoDeDatos
                             End If
                         Case "metodos"
                             esAtributo = False
+                            contieneMetodos = True
                             'leer metodos
                             If CType(tokens(i + 2), Token).lexema.Equals("]") Then
                                 i = i + leerAtributosOMetodos(i + 3)
@@ -379,6 +390,7 @@ Public Class ManejoDeDatos
                 contadorTokens += 1
                 'guardamos el nombre de la clase
                 Me.clase.nombre = CType(tokens(inicio + 1), Token).lexema
+                contieneNombre = True
                 If CType(tokens(inicio + 2), Token).lexema.Equals(";") Then
                     'lectura de nombre de clase finalizada  
                     contadorTokens += 1
