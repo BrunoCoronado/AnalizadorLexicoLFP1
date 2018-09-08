@@ -22,6 +22,10 @@
                 <MenuItem Header="Generar Reporte" Click="generarReporteTokens"/>
                 <MenuItem Header="Generar Diagrama" Click="generarDiagrama"/>
             </MenuItem>
+            <MenuItem Header="Ayuda">
+                <MenuItem Header="Manual de la aplicacion" Click="verManuales"/>
+                <MenuItem Header="Acerca de" Click="verAcercaDe"/>
+            </MenuItem>
         </Menu>
         <TextBox
             Name="txtContenido"

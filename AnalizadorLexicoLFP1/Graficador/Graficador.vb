@@ -12,7 +12,6 @@
         streamWriter.WriteLine("digraph diagrama{")
         streamWriter.WriteLine("size=""5,5""")
         streamWriter.WriteLine("node[shape=record,style=filled,fillcolor=gray95]")
-        streamWriter.WriteLine("edge[dir=back, arrowtail=empty]")
 
         Dim textoNodo As String
 

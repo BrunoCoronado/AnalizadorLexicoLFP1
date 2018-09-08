@@ -255,27 +255,69 @@ Public Class ManejoDeDatos
     End Sub
 
     Private Sub leerContenidoAsociacion(ByVal inicio As Integer)
-        Dim asociacion As New Asociacion
-        If CType(tokens(inicio), Token).tipo.Equals("Identificador") Then
-            'reconocemos al padre de la asociacion
-            asociacion.padre = CType(tokens(inicio), Token).lexema
-            If CType(tokens(inicio + 1), Token).lexema.Equals(":") Then
-                If CType(tokens(inicio + 2), Token).tipo.Equals("Palabra Reservada Asociacion") Then
-                    'reconocemos la asociacion
-                    asociacion.asociacion = CType(tokens(inicio + 2), Token).lexema
-                    If CType(tokens(inicio + 3), Token).lexema.Equals(":") Then
-                        If CType(tokens(inicio + 4), Token).tipo.Equals("Identificador") Then
-                            'reconocemos al hijo de la asociacion
-                            asociacion.hijo = CType(tokens(inicio + 4), Token).lexema
-                            If CType(tokens(inicio + 5), Token).lexema.Equals(";") Then
-                                asociaciones.Add(asociacion)
-                                Console.WriteLine("asociacion correcta")
+        Dim contadorTokens As Integer = 0
+
+        For i As Integer = inicio To tokens.Count
+            Dim asociacion As New Asociacion
+            Select Case CType(tokens(i), Token).tipo
+                Case "Identificador"
+                    contadorTokens += 1
+
+                    'reconocemos al padre de la asociacion
+                    asociacion.padre = CType(tokens(i), Token).lexema
+                    If CType(tokens(i + 1), Token).lexema.Equals(":") Then
+                        contadorTokens += 1
+                        If CType(tokens(i + 2), Token).tipo.Equals("Palabra Reservada Asociacion") Then
+                            contadorTokens += 1
+                            'reconocemos la asociacion
+                            asociacion.asociacion = CType(tokens(i + 2), Token).lexema
+                            If CType(tokens(i + 3), Token).lexema.Equals(":") Then
+                                contadorTokens += 1
+                                If CType(tokens(i + 4), Token).tipo.Equals("Identificador") Then
+                                    contadorTokens += 1
+                                    'reconocemos al hijo de la asociacion
+                                    asociacion.hijo = CType(tokens(i + 4), Token).lexema
+                                    If CType(tokens(i + 5), Token).lexema.Equals(";") Then
+
+                                        asociaciones.Add(asociacion)
+                                        Console.WriteLine("asociacion correcta")
+                                        i = i + contadorTokens
+                                        contadorTokens = 0
+                                    End If
+                                End If
                             End If
                         End If
                     End If
-                End If
-            End If
-        End If
+
+
+
+                Case "Delimitador"
+                    Exit For
+                    'terminan los atributos
+            End Select
+        Next
+
+
+        'If CType(tokens(inicio), Token).tipo.Equals("Identificador") Then
+        '    'reconocemos al padre de la asociacion
+        '    asociacion.padre = CType(tokens(inicio), Token).lexema
+        '    If CType(tokens(inicio + 1), Token).lexema.Equals(":") Then
+        '        If CType(tokens(inicio + 2), Token).tipo.Equals("Palabra Reservada Asociacion") Then
+        '            'reconocemos la asociacion
+        '            asociacion.asociacion = CType(tokens(inicio + 2), Token).lexema
+        '            If CType(tokens(inicio + 3), Token).lexema.Equals(":") Then
+        '                If CType(tokens(inicio + 4), Token).tipo.Equals("Identificador") Then
+        '                    'reconocemos al hijo de la asociacion
+        '                    asociacion.hijo = CType(tokens(inicio + 4), Token).lexema
+        '                    If CType(tokens(inicio + 5), Token).lexema.Equals(";") Then
+        '                        asociaciones.Add(asociacion)
+        '                        Console.WriteLine("asociacion correcta")
+        '                    End If
+        '                End If
+        '            End If
+        '        End If
+        '    End If
+        'End If
     End Sub
 
     Private Sub leerContenidoClase(ByVal inicio As Integer)
