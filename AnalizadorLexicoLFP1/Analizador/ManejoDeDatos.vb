@@ -25,6 +25,8 @@ Public Class ManejoDeDatos
 
         If errorEncontrado Then
             verTablaErroresEnConsola()
+            Dim graficador As New Graficador
+            graficador.dibujarReporteErrores(errores)
         Else
             verTablaTokensEnConsola() ' genera el reporte de tokens
             Dim graficador As New Graficador
