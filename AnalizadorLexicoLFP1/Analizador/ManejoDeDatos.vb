@@ -15,8 +15,10 @@ Public Class ManejoDeDatos
 
         If errorEncontrado Then
             verTablaErroresEnConsola()
+            MessageBox.Show("Errores en el codigo! *revisar Consola", "ERROR")
         Else
             verTablaTokensEnConsola() ' genera el reporte de tokens
+            MessageBox.Show("Sin Errores en el codigo! *revisar Consola", "SIN ERRORES")
         End If
     End Sub
 
@@ -39,6 +41,7 @@ Public Class ManejoDeDatos
 
         If errorEncontrado Then
             verTablaErroresEnConsola()
+            MessageBox.Show("Errores en el codigo! *revisar Consola", "ERROR")
         Else
             verificarSintaxis() ' inicia el proces de diagramar con las funciones de abajo
             Dim graficador As New Graficador
