@@ -1,5 +1,4 @@
-﻿Imports System.Text.RegularExpressions
-
+﻿
 Public Class ManejoDeDatos
     Private tokens As New ArrayList
     Private errores As New ArrayList

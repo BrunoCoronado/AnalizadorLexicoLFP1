@@ -6,6 +6,11 @@
         manejoDeDatos.analizarLexico(obtenerCodigo())
     End Sub
 
+    Private Sub analizarAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim analizadorAUT As New AnalizadorAutomata
+        analizadorAUT.analisisLexico(obtenerCodigo())
+    End Sub
+
 
     Private Sub generarDiagrama(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
@@ -13,6 +18,11 @@
     End Sub
 
     Private Sub generarReporteTokens(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim manejoDeDatos As New ManejoDeDatos
+        manejoDeDatos.reporteDeTokens(obtenerCodigo())
+    End Sub
+
+    Private Sub generarReporteAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
         manejoDeDatos.reporteDeTokens(obtenerCodigo())
     End Sub

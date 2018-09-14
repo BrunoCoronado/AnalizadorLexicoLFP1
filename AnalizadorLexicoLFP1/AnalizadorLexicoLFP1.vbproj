@@ -74,6 +74,7 @@
     </Page>
     <Compile Include="Administracion\AbrirArchivo.vb" />
     <Compile Include="Administracion\GuardarCodigo.vb" />
+    <Compile Include="Analizador\AnalizadorAutomata.vb" />
     <Compile Include="Application.xaml.vb">
       <DependentUpon>Application.xaml</DependentUpon>
       <SubType>Code</SubType>

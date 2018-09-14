@@ -16,10 +16,12 @@
                 <MenuItem Header="Salir" Click="salirDelPrograma"/>
             </MenuItem>
             <MenuItem Header="Analizar">
-                <MenuItem Header="Analizador Lexico" Click="analizar"/>
+                <MenuItem Header="Analizador Lexico DDC" Click="analizar"/>
+                <MenuItem Header="Analizador Lexico AUT" Click="analizarAUT"/>
             </MenuItem>
             <MenuItem Header="Reportes">
-                <MenuItem Header="Generar Reporte" Click="generarReporteTokens"/>
+                <MenuItem Header="Generar Reporte DDC" Click="generarReporteTokens"/>
+                <MenuItem Header="Generar Reporte AUT" Click="generarReporteAUT"/>
                 <MenuItem Header="Generar Diagrama" Click="generarDiagrama"/>
             </MenuItem>
             <MenuItem Header="Ayuda">
