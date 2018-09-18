@@ -80,8 +80,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bean\Asociacion.vb" />
+    <Compile Include="Bean\Automata.vb" />
     <Compile Include="Bean\Caracteristica.vb" />
     <Compile Include="Bean\Clase.vb" />
+    <Compile Include="Bean\Produccion.vb" />
     <Compile Include="Bean\Token.vb" />
     <Compile Include="Graficador\Graficador.vb" />
     <Compile Include="MainWindow.xaml.vb">
