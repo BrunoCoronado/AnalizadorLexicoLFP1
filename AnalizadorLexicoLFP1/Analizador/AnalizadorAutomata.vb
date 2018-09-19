@@ -82,6 +82,22 @@
                                                 Console.WriteLine(produccion.estadoA & "->" & produccion.transicion & "->" & produccion.estadoB)
                                             Next
 
+                                            If CType(tokens(i + contadorCaracteres), Token).lexema.Equals(",") Then
+                                                contadorCaracteres += 1
+                                                If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("[") Then
+                                                    contadorCaracteres += 1
+                                                    'iniciamos la lectura del estado inicial
+                                                    contadorCaracteres = contadorCaracteres + leerEstadoInicial(contadorCaracteres)
+
+                                                    If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("}") Then
+                                                        Console.WriteLine("AUTOMATA LEIDO")
+                                                        Dim graf As New GraficadorAutomata
+                                                        graf.dibujarAutomata(automata)
+                                                    End If
+                                                End If
+
+                                            End If
+
                                         End If
                                     End If
                                 End If
@@ -204,6 +220,20 @@
                 Return contadorCaracteres
             End If
         Next
+        Return contadorCaracteres
+    End Function
+
+    Private Function leerEstadoInicial(ByVal inicio As Integer) As Integer
+        Dim contadorCaracteres As Integer = 0
+        If buscarPalabra(CType(tokens(inicio), Token).lexema, "No Terminal") Then
+            automata.estadoInicial = CType(tokens(inicio), Token).lexema
+            contadorCaracteres += 1
+            If CType(tokens(inicio + 1), Token).lexema.Equals("]") Then
+                contadorCaracteres += 1
+                Return contadorCaracteres
+            End If
+        End If
+        Return contadorCaracteres
     End Function
 
     'revisar si es necesario validar la ER de los no terminales
