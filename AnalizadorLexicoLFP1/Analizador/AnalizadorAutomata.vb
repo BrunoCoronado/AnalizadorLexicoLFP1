@@ -2,11 +2,26 @@
     Private tokens As New ArrayList
     Private esIdentificador As Boolean
     Private palabra As String = ""
+    Private automata As Automata
 
     Public Sub analisisLexico(contenido As ArrayList)
         analizarContenido(contenido)
         verTablaTokensEnConsola()
         analizarEstructura()
+    End Sub
+
+    Public Sub reporteDeSimbolos(contenido As ArrayList)
+        analizarContenido(contenido)
+        analizarEstructura()
+        Dim graf As New GraficadorAutomata
+        graf.dibujarReporteDeSimbolos(automata)
+    End Sub
+
+    Public Sub diagramarAutomata(contenido As ArrayList)
+        analizarContenido(contenido)
+        analizarEstructura()
+        Dim graf As New GraficadorAutomata
+        graf.dibujarAutomata(automata)
     End Sub
 
     Private Sub analizarContenido(contenido As ArrayList)
@@ -48,7 +63,27 @@
             Next
         Next
     End Sub
-    Private automata As Automata
+
+    Private Sub validarEstadoPalabra(ByVal estado As Boolean, ByVal columna As Integer, ByVal fila As Integer)
+        If estado Then
+            agregarTokenATabla(palabra, palabra, columna, fila)
+            palabra = ""
+            esIdentificador = False
+        End If
+    End Sub
+
+    Private Sub agregarTokenATabla(ByVal lexema As String, ByVal tipo As String, ByVal columna As Integer, ByVal fila As Integer)
+        tokens.Add(New Token(lexema, tipo, columna, fila))
+    End Sub
+
+    Private Sub verTablaTokensEnConsola()
+        Dim i As Integer = 0
+        For Each token As Token In tokens
+            Console.WriteLine(i & " Lexema: " & token.lexema.ToString & " Tipo: " & token.tipo & " Fila: " & token.fila.ToString & " Columna: " & token.columna.ToString)
+            i = i + 1
+        Next
+    End Sub
+
     Private Sub analizarEstructura()
         Dim contadorCaracteres As Integer = 0
         For i As Integer = 0 To (tokens.Count - 1)
@@ -78,10 +113,6 @@
                                             'iniciamos la lectura de las reglas de produccion
                                             contadorCaracteres = contadorCaracteres + leerReglasDeProduccion(contadorCaracteres)
 
-                                            For Each produccion As Produccion In automata.getProducciones
-                                                Console.WriteLine(produccion.estadoA & "->" & produccion.transicion & "->" & produccion.estadoB)
-                                            Next
-
                                             If CType(tokens(i + contadorCaracteres), Token).lexema.Equals(",") Then
                                                 contadorCaracteres += 1
                                                 If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("[") Then
@@ -91,8 +122,6 @@
 
                                                     If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("}") Then
                                                         Console.WriteLine("AUTOMATA LEIDO")
-                                                        Dim graf As New GraficadorAutomata
-                                                        graf.dibujarAutomata(automata)
                                                     End If
                                                 End If
 
@@ -258,24 +287,4 @@
 
         Return False
     End Function
-
-    Private Sub validarEstadoPalabra(ByVal estado As Boolean, ByVal columna As Integer, ByVal fila As Integer)
-        If estado Then
-            agregarTokenATabla(palabra, palabra, columna, fila)
-            palabra = ""
-            esIdentificador = False
-        End If
-    End Sub
-
-    Private Sub agregarTokenATabla(ByVal lexema As String, ByVal tipo As String, ByVal columna As Integer, ByVal fila As Integer)
-        tokens.Add(New Token(lexema, tipo, columna, fila))
-    End Sub
-
-    Private Sub verTablaTokensEnConsola()
-        Dim i As Integer = 0
-        For Each token As Token In tokens
-            Console.WriteLine(i & " Lexema: " & token.lexema.ToString & " Tipo: " & token.tipo & " Fila: " & token.fila.ToString & " Columna: " & token.columna.ToString)
-            i = i + 1
-        Next
-    End Sub
 End Class

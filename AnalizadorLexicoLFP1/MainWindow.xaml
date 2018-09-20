@@ -17,12 +17,15 @@
             </MenuItem>
             <MenuItem Header="Analizar">
                 <MenuItem Header="Analizador Lexico DDC" Click="analizar"/>
+                <Separator/>
                 <MenuItem Header="Analizador Lexico AUT" Click="analizarAUT"/>
             </MenuItem>
             <MenuItem Header="Reportes">
                 <MenuItem Header="Generar Reporte DDC" Click="generarReporteTokens"/>
-                <MenuItem Header="Generar Reporte AUT" Click="generarReporteAUT"/>
                 <MenuItem Header="Generar Diagrama" Click="generarDiagrama"/>
+                <Separator/>
+                <MenuItem Header="Generar Reporte AUT" Click="generarReporteAUT"/>
+                <MenuItem Header="Generar Diagrama AUT" Click="generarDiagramaAUT"/>
             </MenuItem>
             <MenuItem Header="Ayuda">
                 <MenuItem Header="Manual de la aplicacion" Click="verManuales"/>

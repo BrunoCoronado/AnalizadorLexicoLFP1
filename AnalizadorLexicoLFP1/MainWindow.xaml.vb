@@ -1,16 +1,10 @@
 ﻿Class MainWindow
     Public Shared ruta As String = ""
-
+    'apartado para modulo de diagrama de clases
     Private Sub analizar(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
         manejoDeDatos.analizarLexico(obtenerCodigo())
     End Sub
-
-    Private Sub analizarAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
-        Dim analizadorAUT As New AnalizadorAutomata
-        analizadorAUT.analisisLexico(obtenerCodigo())
-    End Sub
-
 
     Private Sub generarDiagrama(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim manejoDeDatos As New ManejoDeDatos
@@ -21,12 +15,22 @@
         Dim manejoDeDatos As New ManejoDeDatos
         manejoDeDatos.reporteDeTokens(obtenerCodigo())
     End Sub
-
-    Private Sub generarReporteAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
-        Dim manejoDeDatos As New ManejoDeDatos
-        manejoDeDatos.reporteDeTokens(obtenerCodigo())
+    'apartado de funciones para automatas
+    Private Sub analizarAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim analizadorAUT As New AnalizadorAutomata
+        analizadorAUT.analisisLexico(obtenerCodigo())
     End Sub
 
+    Private Sub generarReporteAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim analizadorAUT As New AnalizadorAutomata
+        analizadorAUT.reporteDeSimbolos(obtenerCodigo())
+    End Sub
+
+    Private Sub generarDiagramaAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
+        Dim analizadorAUT As New AnalizadorAutomata
+        analizadorAUT.diagramarAutomata(obtenerCodigo())
+    End Sub
+    'apartado funcional
     Private Sub abrirArchivo(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim abrirArchivo As New AbrirArchivo()
         txtContenido.Text = abrirArchivo.abrirArchivo()

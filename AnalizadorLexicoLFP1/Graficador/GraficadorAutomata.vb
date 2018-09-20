@@ -38,20 +38,10 @@
         End Try
     End Sub
 
-    Private Sub abrirArchivo(ByVal archivo As String)
+    Public Sub dibujarReporteDeSimbolos(automata As Automata)
+        Dim direccion As String = My.Computer.FileSystem.SpecialDirectories.Desktop + "\reporteSimbolos"
         Try
-            Process.Start(archivo)
-        Catch ex As Exception
-            Console.WriteLine("tratando de abrir archivo")
-            abrirArchivo(archivo)
-        End Try
-    End Sub
-
-
-    Public Sub dibujarReporteTokens(ByVal listaTokens As ArrayList)
-        Dim direccion As String = My.Computer.FileSystem.SpecialDirectories.Desktop + "\reporteTokens"
-        Try
-            My.Computer.FileSystem.DeleteFile("reporteTokens.html")
+            My.Computer.FileSystem.DeleteFile("reporteSimbolos.html")
         Catch ex As Exception
 
         End Try
@@ -59,22 +49,35 @@
         Dim streamWriter As New System.IO.StreamWriter(direccion + ".html")
 
         'definimos el encabezado del archivo html
-        streamWriter.WriteLine("<!DOCTYPE html>" & vbCrLf & "<html>" & vbCrLf & "<head>" & vbCrLf & "<title>Reporte de Tokens</title>" & vbCrLf & "</head>" & vbCrLf & "<body>" & vbCrLf & "<h1 align=""center"">Reporte de Tokens</h1>" & vbCrLf & "<style type=""text/css"">" & vbCrLf & ".tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}" & vbCrLf & ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}" & vbCrLf & ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}" & vbCrLf & ".tg .tg-4tse{background-color:#32cb00;color:#000000;text-align:left;vertical-align:top}" & vbCrLf & ".tg .tg-0lax{text-align:left;vertical-align:top}" & vbCrLf & "h1{font-family:Arial, sans-serif}" & vbCrLf & "</style>")
+        streamWriter.WriteLine("<!DOCTYPE html>" & vbCrLf & "<html>" & vbCrLf & "<head>" & vbCrLf & "<title>Reporte Simbolos</title>" & vbCrLf & "</head>" & vbCrLf & "<body>" & vbCrLf & "<h1 align=""center"">Reporte de Simbolos</h1>" & vbCrLf & "<style type=""text/css"">" & vbCrLf & ".tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}" & vbCrLf & ".tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}" & vbCrLf & ".tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}" & vbCrLf & ".tg .tg-4tse{background-color:#32cb00;color:#000000;text-align:left;vertical-align:top}" & vbCrLf & ".tg .tg-0lax{text-align:left;vertical-align:top}" & vbCrLf & "h1{font-family:Arial, sans-serif}" & vbCrLf & "</style>")
 
         'definimos la tabla y su encabezado
         streamWriter.WriteLine("<table class=""tg"">")
-        streamWriter.WriteLine("<tr>" & vbCrLf & "<th class=""tg-4tse"">No</th>" & vbCrLf & "<th class=""tg-4tse"">Lexema</th>" & vbCrLf & "<th class=""tg-4tse"">Tipo</th>" & vbCrLf & "<th class=""tg-4tse"">Columna</th>" & vbCrLf & "<th class=""tg-4tse"">Linea</th>" & vbCrLf & "</tr>")
+        streamWriter.WriteLine("<tr>" & vbCrLf & "<th class=""tg-4tse"">No</th>" & vbCrLf & "<th class=""tg-4tse"">Simbolo</th>" & vbCrLf & "<th class=""tg-4tse"">Terminal/No Terminal</th>" & vbCrLf & "<th class=""tg-4tse"">Uso</th>" & vbCrLf & "</tr>")
 
         'llenamos la tabla con el contenido
-        For i As Integer = 0 To (listaTokens.Count - 1)
+        Dim contador As Integer = 1
+
+        For Each terminal As String In automata.getTerminales
             streamWriter.WriteLine("<tr>")
-            streamWriter.WriteLine("<td class=""tg-0Lax"">" + i.ToString + "<br></td>")
-            streamWriter.WriteLine("<td Class=""tg-0Lax"">" + CType(listaTokens(i), Token).lexema + "</td>")
-            streamWriter.WriteLine("<td class=""tg-0Lax"">" + CType(listaTokens(i), Token).tipo + "</td>")
-            streamWriter.WriteLine("<td Class=""tg-0Lax"">" + CType(listaTokens(i), Token).columna.ToString + "</td>")
-            streamWriter.WriteLine("<td class=""tg-0Lax"">" + CType(listaTokens(i), Token).fila.ToString + "</td>")
+            streamWriter.WriteLine("<td class=""tg-0Lax"">" + contador.ToString + "<br></td>")
+            streamWriter.WriteLine("<td Class=""tg-0Lax"">" + terminal + "</td>")
+            streamWriter.WriteLine("<td class=""tg-0Lax"">" + "Terminal" + "</td>")
+            streamWriter.WriteLine("<td Class=""tg-0Lax"">" + buscarUsos(terminal, automata) + "</td>")
             streamWriter.WriteLine("</tr>")
+            contador += 1
         Next
+
+        For Each noTerminal As String In automata.getNoTerminales
+            streamWriter.WriteLine("<tr>")
+            streamWriter.WriteLine("<td class=""tg-0Lax"">" + contador.ToString + "<br></td>")
+            streamWriter.WriteLine("<td Class=""tg-0Lax"">" + noTerminal + "</td>")
+            streamWriter.WriteLine("<td class=""tg-0Lax"">" + "No Terminal" + "</td>")
+            streamWriter.WriteLine("<td Class=""tg-0Lax"">" + buscarUsos(noTerminal, automata) + "</td>")
+            streamWriter.WriteLine("</tr>")
+            contador += 1
+        Next
+
         'definimos la parte final del archivo html
         streamWriter.WriteLine("</body>" & vbCrLf & "</html>")
 
@@ -86,7 +89,34 @@
             Console.WriteLine("error al abrir")
             abrirArchivo(direccion + ".html")
         End Try
+    End Sub
 
+    Private Function buscarUsos(simbolo As String, automata As Automata) As String
+        Dim usos As String = ""
+        For Each produccion As Produccion In automata.getProducciones
+            If produccion.estadoA.Equals(simbolo) Then
+                usos = usos + "{" + produccion.estadoA + "," + produccion.transicion + "," + produccion.estadoB + "}<br>"
+            End If
+            If produccion.estadoB.Equals(simbolo) Then
+                If produccion.estadoA.Equals(simbolo) Then
+                Else
+                    usos = usos + "{" + produccion.estadoA + "," + produccion.transicion + "," + produccion.estadoB + "}<br>"
+                End If
+            End If
+            If produccion.transicion.Equals(simbolo) Then
+                usos = usos + "{" + produccion.estadoA + "," + produccion.transicion + "," + produccion.estadoB + "}<br>"
+            End If
+        Next
+        Return usos
+    End Function
+
+    Private Sub abrirArchivo(ByVal archivo As String)
+        Try
+            Process.Start(archivo)
+        Catch ex As Exception
+            Console.WriteLine("tratando de abrir archivo")
+            abrirArchivo(archivo)
+        End Try
     End Sub
 
     Public Sub dibujarReporteErrores(ByVal listaErrores As ArrayList)
