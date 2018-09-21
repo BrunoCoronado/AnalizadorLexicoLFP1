@@ -133,14 +133,13 @@
 
         'definimos la tabla y su encabezado
         streamWriter.WriteLine("<table class=""tg"">")
-        streamWriter.WriteLine("<tr>" & vbCrLf & "<th class=""tg-4tse"">No</th>" & vbCrLf & "<th class=""tg-4tse"">Lexema</th>" & vbCrLf & "<th class=""tg-4tse"">Tipo</th>" & vbCrLf & "<th class=""tg-4tse"">Columna</th>" & vbCrLf & "<th class=""tg-4tse"">Linea</th>" & vbCrLf & "</tr>")
+        streamWriter.WriteLine("<tr>" & vbCrLf & "<th class=""tg-4tse"">No</th>" & vbCrLf & "<th class=""tg-4tse"">Error</th>" & vbCrLf & "<th class=""tg-4tse"">Columna</th>" & vbCrLf & "<th class=""tg-4tse"">Linea</th>" & vbCrLf & "</tr>")
 
         'llenamos la tabla con el contenido
         For i As Integer = 0 To (listaErrores.Count - 1)
             streamWriter.WriteLine("<tr>")
             streamWriter.WriteLine("<td class=""tg-0Lax"">" + i.ToString + "<br></td>")
             streamWriter.WriteLine("<td Class=""tg-0Lax"">" + CType(listaErrores(i), Token).lexema + "</td>")
-            streamWriter.WriteLine("<td class=""tg-0Lax"">" + CType(listaErrores(i), Token).tipo + "</td>")
             streamWriter.WriteLine("<td Class=""tg-0Lax"">" + CType(listaErrores(i), Token).columna.ToString + "</td>")
             streamWriter.WriteLine("<td class=""tg-0Lax"">" + CType(listaErrores(i), Token).fila.ToString + "</td>")
             streamWriter.WriteLine("</tr>")

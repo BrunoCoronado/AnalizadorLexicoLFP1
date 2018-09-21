@@ -1,5 +1,7 @@
 ﻿Public Class AnalizadorAutomata
     Private tokens As New ArrayList
+    Private errores As New ArrayList
+    Private existeError As Boolean
     Private esIdentificador As Boolean
     Private palabra As String = ""
     Private automata As Automata
@@ -8,20 +10,35 @@
         analizarContenido(contenido)
         verTablaTokensEnConsola()
         analizarEstructura()
+
+        If existeError Then
+            MessageBox.Show("Errores en el codigo!", "ERROR")
+        Else
+            MessageBox.Show("Sin Errores en el codigo!", "SIN ERRORES")
+        End If
+
     End Sub
 
     Public Sub reporteDeSimbolos(contenido As ArrayList)
         analizarContenido(contenido)
         analizarEstructura()
         Dim graf As New GraficadorAutomata
-        graf.dibujarReporteDeSimbolos(automata)
+        If existeError Then
+            graf.dibujarReporteErrores(errores)
+        Else
+            graf.dibujarReporteDeSimbolos(automata)
+        End If
     End Sub
 
     Public Sub diagramarAutomata(contenido As ArrayList)
         analizarContenido(contenido)
         analizarEstructura()
         Dim graf As New GraficadorAutomata
-        graf.dibujarAutomata(automata)
+        If existeError Then
+            graf.dibujarReporteErrores(errores)
+        Else
+            graf.dibujarAutomata(automata)
+        End If
     End Sub
 
     Private Sub analizarContenido(contenido As ArrayList)
@@ -44,19 +61,12 @@
                         esIdentificador = True
                         palabra = palabra & linea(i)
                     Case "0" To "9"
-                        If esIdentificador Then
-                            palabra = palabra & linea(i)
-                        Else
-                            agregarTokenATabla(linea(i), linea(i), i, noLinea)
-                        End If
+                        esIdentificador = True
+                        palabra = palabra & linea(i)
                     Case "_"
-                        If esIdentificador And i = 1 Then
-                            palabra = palabra & linea(i)
-                        Else
-                            agregarTokenATabla(linea(i), linea(i), i, noLinea)
-                        End If
+                        esIdentificador = True
+                        palabra = palabra & linea(i)
                     Case Else
-                        'agregar todo a tabla
                         validarEstadoPalabra(esIdentificador, (i - palabra.Length), noLinea)
                         agregarTokenATabla(linea(i), linea(i), i, noLinea)
                 End Select
@@ -98,35 +108,28 @@
                             contadorCaracteres += 1
                             'iniciamos lectura de terminales
                             contadorCaracteres = contadorCaracteres + leerTerminales(contadorCaracteres)
-
                             If CType(tokens(i + contadorCaracteres), Token).lexema.Equals(",") Then
                                 contadorCaracteres += 1
                                 If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("[") Then
                                     contadorCaracteres += 1
                                     'iniciamos lectura de no terminales
                                     contadorCaracteres = contadorCaracteres + leerNoTerminales(contadorCaracteres)
-
                                     If CType(tokens(i + contadorCaracteres), Token).lexema.Equals(",") Then
                                         contadorCaracteres += 1
                                         If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("[") Then
                                             contadorCaracteres += 1
                                             'iniciamos la lectura de las reglas de produccion
                                             contadorCaracteres = contadorCaracteres + leerReglasDeProduccion(contadorCaracteres)
-
                                             If CType(tokens(i + contadorCaracteres), Token).lexema.Equals(",") Then
                                                 contadorCaracteres += 1
                                                 If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("[") Then
                                                     contadorCaracteres += 1
                                                     'iniciamos la lectura del estado inicial
                                                     contadorCaracteres = contadorCaracteres + leerEstadoInicial(contadorCaracteres)
-
                                                     If CType(tokens(i + contadorCaracteres), Token).lexema.Equals("}") Then
-                                                        Console.WriteLine("AUTOMATA LEIDO")
                                                     End If
                                                 End If
-
                                             End If
-
                                         End If
                                     End If
                                 End If
@@ -140,22 +143,16 @@
 
     Private Function leerTerminales(ByVal inicio As Integer) As Integer
         Dim contadorCaracteres As Integer = 0
-        Console.WriteLine("TERMINALES")
         For i = inicio To (tokens.Count - 1)
             If CType(tokens(i + 1), Token).lexema.Equals(",") Then
                 contadorCaracteres += 1
-                Console.WriteLine(CType(tokens(i), Token).lexema)
-                CType(tokens(i), Token).tipo = "Terminal"
                 automata.setTerminal(CType(tokens(i), Token).lexema)
                 contadorCaracteres += 1
                 i = i + 1
             ElseIf CType(tokens(i + 1), Token).lexema.Equals("]") Then
                 contadorCaracteres += 1
-                Console.WriteLine(CType(tokens(i), Token).lexema)
-                CType(tokens(i), Token).tipo = "Terminal"
                 automata.setTerminal(CType(tokens(i), Token).lexema)
                 contadorCaracteres += 1
-                Console.WriteLine("-----------FIN------------")
                 Return contadorCaracteres
             End If
         Next
@@ -164,78 +161,107 @@
 
     Private Function leerNoTerminales(ByVal inicio As Integer) As Integer
         Dim contadorCaracteres As Integer = 0
-        Console.WriteLine("NO TERMINALES")
         For i = inicio To (tokens.Count - 1)
             If CType(tokens(i + 1), Token).lexema.Equals(",") Then
                 contadorCaracteres += 1
-                Console.WriteLine(CType(tokens(i), Token).lexema)
-                CType(tokens(i), Token).tipo = "No Terminal"
-                automata.setNoTerminal(CType(tokens(i), Token).lexema)
+                If validarNoTerminal(CType(tokens(i), Token).lexema) Then
+                    existeError = True
+                    errores.Add(tokens(i))
+                Else
+                    automata.setNoTerminal(CType(tokens(i), Token).lexema)
+                End If
                 contadorCaracteres += 1
                 i = i + 1
             ElseIf CType(tokens(i + 1), Token).lexema.Equals("]") Then
                 contadorCaracteres += 1
-                Console.WriteLine(CType(tokens(i), Token).lexema)
-                CType(tokens(i), Token).tipo = "No Terminal"
-                automata.setNoTerminal(CType(tokens(i), Token).lexema)
+                If validarNoTerminal(CType(tokens(i), Token).lexema) Then
+                    existeError = True
+                    errores.Add(tokens(i))
+                Else
+                    automata.setNoTerminal(CType(tokens(i), Token).lexema)
+                End If
                 contadorCaracteres += 1
-                Console.WriteLine("-----------FIN------------")
                 Return contadorCaracteres
             End If
         Next
         Return contadorCaracteres
     End Function
 
+    'revisar si es necesario validar la ER de los no terminales
+    Private Function validarNoTerminal(ByVal palabra As String) As Boolean
+        Dim errorEnNoTerminal As Boolean
+
+        For i As Integer = 0 To (palabra.Length - 1)
+            Select Case palabra(i)
+                Case "a" To "z"
+                Case "A" To "Z"
+                Case "0" To "9"
+                    If i = 0 Then
+                        errorEnNoTerminal = True
+                        Return errorEnNoTerminal
+                    End If
+                Case "_"
+                    If i <> 1 Then
+                        errorEnNoTerminal = True
+                        Return errorEnNoTerminal
+                    End If
+                Case Else
+                    errorEnNoTerminal = True
+                    Return errorEnNoTerminal
+            End Select
+        Next
+        Return errorEnNoTerminal
+    End Function
+
     Private Function leerReglasDeProduccion(ByVal inicio As Integer) As Integer
         Dim contadorCaracteres As Integer = 0
-        Console.WriteLine("REGLAS DE PRODUCCION")
         For i = inicio To (tokens.Count - 1)
             Dim produccion As New Produccion
             If CType(tokens(i), Token).lexema.Equals("{") Then
                 contadorCaracteres += 1
                 'tiene que venir un no terminal
-                If buscarPalabra(CType(tokens(i + 1), Token).lexema, "No Terminal") Then
+                If buscarPalabra(CType(tokens(i + 1), Token).lexema, "No Terminal", i + 1) Then
                     contadorCaracteres += 1
-                    Produccion.estadoA = CType(tokens(i + 1), Token).lexema
+                    produccion.estadoA = CType(tokens(i + 1), Token).lexema
                     If CType(tokens(i + 2), Token).lexema.Equals(",") Then
                         contadorCaracteres += 1
                         'tiene que venir un terminal o no
-                        If buscarPalabra(CType(tokens(i + 3), Token).lexema, "Terminal") Then
+                        If buscarPalabra(CType(tokens(i + 3), Token).lexema, "Terminal", i + 3) Then
                             contadorCaracteres += 1
-                            Produccion.transicion = CType(tokens(i + 3), Token).lexema
+                            produccion.transicion = CType(tokens(i + 3), Token).lexema
                             If CType(tokens(i + 4), Token).lexema.Equals(",") Then
                                 contadorCaracteres += 1
-                                If buscarPalabra(CType(tokens(i + 5), Token).lexema, "No Terminal") Then
+                                If buscarPalabra(CType(tokens(i + 5), Token).lexema, "No Terminal", i + 5) Then
                                     contadorCaracteres += 1
-                                    Produccion.estadoB = CType(tokens(i + 5), Token).lexema
+                                    produccion.estadoB = CType(tokens(i + 5), Token).lexema
                                     If CType(tokens(i + 6), Token).lexema.Equals("}") Then
                                         contadorCaracteres += 1
                                         If CType(tokens(i + 7), Token).lexema.Equals(",") Then
                                             contadorCaracteres += 1
-                                            automata.setProduccion(Produccion)
+                                            automata.setProduccion(produccion)
                                             i = i + 7
                                         ElseIf CType(tokens(i + 7), Token).lexema.Equals("]") Then
                                             contadorCaracteres += 1
-                                            automata.setProduccion(Produccion)
+                                            automata.setProduccion(produccion)
                                             Return contadorCaracteres
                                         End If
                                     End If
                                 End If
                             End If
                         Else
-                            If buscarPalabra(CType(tokens(i + 3), Token).lexema, "No Terminal") Then
+                            If buscarPalabra(CType(tokens(i + 3), Token).lexema, "No Terminal", i + 3) Then
                                 contadorCaracteres += 1
-                                Produccion.estadoB = CType(tokens(i + 3), Token).lexema
-                                Produccion.transicion = "Epsilon"
+                                produccion.estadoB = CType(tokens(i + 3), Token).lexema
+                                produccion.transicion = "Epsilon"
                                 If CType(tokens(i + 4), Token).lexema.Equals("}") Then
                                     contadorCaracteres += 1
                                     If CType(tokens(i + 5), Token).lexema.Equals(",") Then
                                         contadorCaracteres += 1
-                                        automata.setProduccion(Produccion)
+                                        automata.setProduccion(produccion)
                                         i = i + 5
                                     ElseIf CType(tokens(i + 5), Token).lexema.Equals("]") Then
                                         contadorCaracteres += 1
-                                        automata.setProduccion(Produccion)
+                                        automata.setProduccion(produccion)
                                         Return contadorCaracteres
                                     End If
                                 End If
@@ -245,7 +271,6 @@
                 End If
             ElseIf CType(tokens(i), Token).lexema.Equals("]") Then
                 contadorCaracteres += 1
-                Console.WriteLine("-----------FIN------------")
                 Return contadorCaracteres
             End If
         Next
@@ -254,7 +279,7 @@
 
     Private Function leerEstadoInicial(ByVal inicio As Integer) As Integer
         Dim contadorCaracteres As Integer = 0
-        If buscarPalabra(CType(tokens(inicio), Token).lexema, "No Terminal") Then
+        If buscarPalabra(CType(tokens(inicio), Token).lexema, "No Terminal", inicio) Then
             automata.estadoInicial = CType(tokens(inicio), Token).lexema
             contadorCaracteres += 1
             If CType(tokens(inicio + 1), Token).lexema.Equals("]") Then
@@ -265,12 +290,7 @@
         Return contadorCaracteres
     End Function
 
-    'revisar si es necesario validar la ER de los no terminales
-    Private Function validarNoTerminal(ByVal palabra As String) As Boolean
-
-    End Function
-
-    Private Function buscarPalabra(ByVal palabra As String, ByVal tipo As String) As Boolean
+    Private Function buscarPalabra(ByVal palabra As String, ByVal tipo As String, ByVal posicionToken As Integer) As Boolean
         Dim lista As New ArrayList
 
         If tipo.Equals("Terminal") Then
@@ -279,12 +299,17 @@
             lista = automata.getNoTerminales
         End If
 
-        For Each dato As String In lista
-            If dato.Equals(palabra) Then
-                Return True
-            End If
-        Next
+        If lista.Contains(palabra) Then
+            Return True
+        End If
 
+        If errores.Contains(tokens(posicionToken)) Then
+        Else
+            If tipo.Equals("No Terminal") Then
+                errores.Add(tokens(posicionToken))
+                existeError = True
+            End If
+        End If
         Return False
     End Function
 End Class
