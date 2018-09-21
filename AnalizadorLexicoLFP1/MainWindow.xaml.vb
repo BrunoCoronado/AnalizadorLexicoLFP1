@@ -18,17 +18,29 @@
     'apartado de funciones para automatas
     Private Sub analizarAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim analizadorAUT As New AnalizadorAutomata
-        analizadorAUT.analisisLexico(obtenerCodigo())
+        Try
+            analizadorAUT.analisisLexico(obtenerCodigo())
+        Catch ex As Exception
+            Console.WriteLine("Error")
+        End Try
     End Sub
 
     Private Sub generarReporteAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim analizadorAUT As New AnalizadorAutomata
-        analizadorAUT.reporteDeSimbolos(obtenerCodigo())
+        Try
+            analizadorAUT.reporteDeSimbolos(obtenerCodigo())
+        Catch ex As Exception
+            Console.WriteLine("Error")
+        End Try
     End Sub
 
     Private Sub generarDiagramaAUT(ByVal sender As System.Object, ByVal e As System.EventArgs)
         Dim analizadorAUT As New AnalizadorAutomata
-        analizadorAUT.diagramarAutomata(obtenerCodigo())
+        Try
+            analizadorAUT.diagramarAutomata(obtenerCodigo())
+        Catch ex As Exception
+            Console.WriteLine("Error")
+        End Try
     End Sub
     'apartado funcional
     Private Sub abrirArchivo(ByVal sender As System.Object, ByVal e As System.EventArgs)

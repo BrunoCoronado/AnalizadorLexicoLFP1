@@ -16,8 +16,10 @@
                 Loop
                 Console.WriteLine(codigo)
                 Console.WriteLine("lectura terminada")
+                streamReader.Close()
             Catch ex As Exception
                 Console.WriteLine("lectura terminada en ex")
+                streamReader.Close()
             End Try
         End If
         Return codigo

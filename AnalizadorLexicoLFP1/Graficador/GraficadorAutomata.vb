@@ -12,7 +12,7 @@
         streamWriter.WriteLine("digraph Automata_Finito{")
         streamWriter.WriteLine("rankdir=LR;")
         streamWriter.WriteLine("size=""8,5""")
-        streamWriter.WriteLine("node [shape = doublecircle, color = blue]; U;")
+        'streamWriter.WriteLine("node [shape = doublecircle, color = blue]; U;")
         streamWriter.WriteLine("node [shape = circle];")
 
         Dim textoNodo As String
