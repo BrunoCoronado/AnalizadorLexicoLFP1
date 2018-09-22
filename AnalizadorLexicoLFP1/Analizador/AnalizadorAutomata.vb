@@ -47,12 +47,12 @@
             For i As Integer = 0 To (linea.Length - 1)
                 Select Case linea(i)
                     Case vbCrLf
-                        validarEstadoPalabra(esIdentificador, (i - palabra.Length), noLinea)
+                        'validarEstadoPalabra(esIdentificador, (i - palabra.Length), noLinea)
                     Case vbCr
                         validarEstadoPalabra(esIdentificador, (i - palabra.Length), noLinea)
                     Case vbTab
                     Case vbLf
-                        validarEstadoPalabra(esIdentificador, (i - palabra.Length), noLinea)
+                        'validarEstadoPalabra(esIdentificador, (i - palabra.Length), noLinea)
                     Case " "
                     Case "a" To "z"
                         esIdentificador = True
